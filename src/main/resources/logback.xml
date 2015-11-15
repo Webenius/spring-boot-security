@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<!-- This is MDC value: a value to 'logFileName' is assigned via Java code -->
+		<discriminator>
+			<key>logFileName</key>
+			<defaultValue>Logfile</defaultValue>
+			<!--defaultValue>Logfile.${contextName}</defaultValue-->
+		</discriminator>
+
+		<sift>
+		    <!-- A standard RollingFileAppender, the log file is based on 'logFileName' at runtime  -->
+		    <appender name="FILE-${logFileName}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<file>${logFileName}.log</file> <!-- logFileName contains ${app.home}/LOG/ -->
+				<!--prudent>true</prudent-->
+
+				<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+					<Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] - %-5level %logger{36} - %msg%n</Pattern>
+				</encoder>
+
+				<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+					<FileNamePattern>${logFileName}.%i.log.zip</FileNamePattern> <!-- logFileName contains ${app.home}/LOG/ -->
+					<MinIndex>1</MinIndex>
+					<MaxIndex>10</MaxIndex>
+				</rollingPolicy>
+
+				<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+					<MaxFileSize>10MB</MaxFileSize>
+				</triggeringPolicy>
+		    </appender>
+ 		</sift>
+	</appender>
+
+	<!-- logger levels: TRACE, DEBUG, INFO, WARN, ERROR, ALL or OFF -->
+	<logger name="org.springframework.integration" level="INFO" />
+	<logger name="org.springframework.beans" level="INFO" />
+	<logger name="org.springframework.cache" level="INFO" />
+	<logger name="org.springframework.cache.annotation" level="INFO" />
+	<logger name="org.springframework.context" level="INFO" />
+	<logger name="org.springframework.core" level="INFO" />
+	<logger name="org.springframework.data.jpa" level="INFO" />
+	<logger name="org.springframework.web" level="INFO" />
+	<logger name="org.hibernate" level="INFO" />
+	<logger name="org.apache.commons" level="ERROR" />
+
+	<!-- Application Loggers -->
+	<logger name="com.sambi.app" value="debug" />
+
+	<root level="WARN">
+		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
